@@ -15,60 +15,326 @@
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
     
-    <!-- Favicon y iconos PWA -->
-    <link rel="icon" href="icons/favicon.ico" type="image/x-icon">
-    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
-    
-    <!-- Manifest para PWA -->
-    <link rel="manifest" href="manifest.json">
-    
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Nuestros archivos CSS -->
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/components/header.css">
-    <link rel="stylesheet" href="css/components/card.css">
-    <link rel="stylesheet" href="css/components/chat.css">
-    <link rel="stylesheet" href="css/components/upload.css">
-    <link rel="stylesheet" href="css/components/schedule.css">
-    <link rel="stylesheet" href="css/components/modal.css">
-    <link rel="stylesheet" href="css/ai.css">
+    <!-- Nuestros archivos CSS con verificación -->
+    <link rel="stylesheet" href="css/style.css" onerror="alert('Falta: css/style.css')">
+    <link rel="stylesheet" href="css/components/header.css" onerror="alert('Falta: css/components/header.css')">
+    <link rel="stylesheet" href="css/components/card.css" onerror="alert('Falta: css/components/card.css')">
+    <link rel="stylesheet" href="css/components/chat.css" onerror="alert('Falta: css/components/chat.css')">
+    <link rel="stylesheet" href="css/components/upload.css" onerror="alert('Falta: css/components/upload.css')">
+    <link rel="stylesheet" href="css/components/schedule.css" onerror="alert('Falta: css/components/schedule.css')">
+    <link rel="stylesheet" href="css/components/modal.css" onerror="alert('Falta: css/components/modal.css')">
+    <link rel="stylesheet" href="css/ai.css" onerror="alert('Falta: css/ai.css')">
+    
+    <!-- Estilos de respaldo por si falla la carga -->
+    <style>
+        /* Estilos mínimos de respaldo */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #edf2f4 0%, #e5e5e5 100%);
+            color: #212529;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, #4361ee, #3a0ca3);
+            color: white;
+            padding: 15px 20px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-body {
+            padding: 20px;
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .btn {
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 14px;
+            white-space: nowrap;
+            min-width: 120px;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #4361ee, #3a0ca3);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: #4361ee;
+            border: 2px solid #4361ee;
+        }
+        
+        .btn-outline:hover {
+            background-color: #4361ee;
+            color: white;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            background-color: #4cc9f0;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transform: translateX(100%);
+            transition: transform 0.3s ease-out;
+            z-index: 1000;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        /* Estilos para el área de chat */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            min-height: 200px;
+        }
+        
+        .message {
+            padding: 12px 16px;
+            border-radius: 18px;
+            max-width: 80%;
+            position: relative;
+        }
+        
+        .user-message {
+            background-color: #4361ee;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .bot-message {
+            background-color: #edf2f4;
+            color: #212529;
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+        }
+        
+        .message-time {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            margin-top: 5px;
+            text-align: right;
+        }
+        
+        .input-area {
+            display: flex;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+            gap: 10px;
+        }
+        
+        input[type="text"] {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #ced4da;
+            border-radius: 20px;
+            outline: none;
+            font-size: 16px;
+        }
+        
+        /* Estilos para el área de subida */
+        .upload-area {
+            border: 2px dashed #4361ee;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px;
+            margin: 15px 0;
+            cursor: pointer;
+            transition: all 0.3s;
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+        
+        .upload-area:hover {
+            background-color: rgba(67, 97, 238, 0.1);
+            border-color: #3a0ca3;
+        }
+        
+        .upload-icon {
+            font-size: 3rem;
+            color: #4361ee;
+            margin-bottom: 15px;
+        }
+        
+        .file-list {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: #edf2f4;
+            border-radius: 8px;
+            gap: 10px;
+        }
+        
+        .file-icon {
+            font-size: 1.5rem;
+            color: #4361ee;
+        }
+        
+        .file-info {
+            flex: 1;
+        }
+        
+        .file-name {
+            font-weight: 600;
+        }
+        
+        .file-meta {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        
+        .storage-info {
+            font-size: 0.8rem;
+            padding: 10px;
+            background-color: #edf2f4;
+            border-radius: 8px;
+            margin-top: 15px;
+            text-align: center;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            gap: 10px;
+        }
+        
+        /* Estilos para el cronograma */
+        .schedule-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .schedule-view {
+            margin-top: 20px;
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: #6c757d;
+        }
+        
+        .footer {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        /* Estilos para la verificación de archivos */
+        .status {
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <!-- Panel de configuración de IA -->
-        <div class="ai-config-panel">
-            <div class="ai-config-header">
-                <h4><i class="fas fa-robot"></i> Configuración de IA</h4>
+        <div class="card">
+            <div class="card-header">
+                <span><i class="fas fa-robot"></i> Configuración de IA</span>
                 <button class="ai-config-toggle"><i class="fas fa-cog"></i></button>
             </div>
-            <div class="ai-config-content" style="display: none;">
-                <div class="ai-config-item">
-                    <label for="ai-api-key">API Key (Hugging Face):</label>
-                    <input type="password" id="ai-api-key" placeholder="hf_...">
-                    <button id="save-ai-key">Guardar</button>
-                    <p class="help-text">Obtén tu API key en <a href="https://huggingface.co" target="_blank">huggingface.co</a></p>
-                </div>
-                <div class="ai-config-item">
-                    <label>
-                        <input type="checkbox" id="ai-auto-analysis" checked>
-                        Análisis automático con IA
-                    </label>
-                </div>
-                <div class="ai-config-item">
-                    <label>
-                        <input type="checkbox" id="ai-advanced-ocr" checked>
-                        OCR Avanzado
-                    </label>
-                </div>
-                <div class="ai-config-item">
-                    <button id="ai-analyze-all" class="btn btn-outline">
-                        <i class="fas fa-brain"></i> Analizar todo con IA
-                    </button>
-                    <button id="ai-view-insights" class="btn btn-outline">
-                        <i class="fas fa-chart-bar"></i> Ver insights
-                    </button>
+            <div class="card-body">
+                <div class="ai-config-content" style="display: none;">
+                    <div class="ai-config-item">
+                        <label for="ai-api-key">API Key (Hugging Face):</label>
+                        <input type="password" id="ai-api-key" placeholder="hf_...">
+                        <button id="save-ai-key">Guardar</button>
+                        <p class="help-text">Obtén tu API key en <a href="https://huggingface.co" target="_blank">huggingface.co</a></p>
+                    </div>
+                    <div class="ai-config-item">
+                        <label>
+                            <input type="checkbox" id="ai-auto-analysis" checked>
+                            Análisis automático con IA
+                        </label>
+                    </div>
+                    <div class="ai-config-item">
+                        <button id="ai-analyze-all" class="btn btn-outline">
+                            <i class="fas fa-brain"></i> Analizar todo con IA
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -291,6 +557,27 @@
             </div>
         </div>
         
+        <!-- Sección de verificación de archivos CSS -->
+        <div class="card" style="grid-column: 1 / -1;">
+            <div class="card-header">
+                <span>Verificación de Archivos CSS</span>
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="card-body">
+                <p>Verificando archivos CSS... <span id="css-status">En proceso</span></p>
+                <ul id="css-file-list" style="list-style: none; padding: 0;">
+                    <li>css/style.css: <span class="status">Verificando...</span></li>
+                    <li>css/components/header.css: <span class="status">Verificando...</span></li>
+                    <li>css/components/card.css: <span class="status">Verificando...</span></li>
+                    <li>css/components/chat.css: <span class="status">Verificando...</span></li>
+                    <li>css/components/upload.css: <span class="status">Verificando...</span></li>
+                    <li>css/components/schedule.css: <span class="status">Verificando...</span></li>
+                    <li>css/components/modal.css: <span class="status">Verificando...</span></li>
+                    <li>css/ai.css: <span class="status">Verificando...</span></li>
+                </ul>
+            </div>
+        </div>
+        
         <div class="footer">
             <p>Organizador Inteligente con OCR & IA &copy; 2023 - <a href="https://github.com/Luben2003/organice" target="_blank">Ver en GitHub</a></p>
             <div class="footer-links">
@@ -301,88 +588,11 @@
         </div>
     </div>
 
-    <!-- Modal para visualizar el documento -->
-    <div class="modal" id="document-modal">
-        <div class="modal-content">
-            <span class="close-modal" id="close-modal">&times;</span>
-            <div class="document-header">
-                <h2 class="document-title" id="document-title">Cronograma de Actividades</h2>
-                <p class="document-date" id="document-date"></p>
-            </div>
-            <div class="document-body" id="document-body">
-                <!-- El contenido del documento se insertará aquí -->
-            </div>
-            <div class="document-actions">
-                <button class="btn btn-primary" id="print-document">
-                    <i class="fas fa-print"></i> Imprimir
-                </button>
-                <button class="btn btn-outline" id="close-document">
-                    <i class="fas fa-times"></i> Cerrar
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de configuración de IA -->
-    <div class="modal" id="ai-settings-modal">
-        <div class="modal-content">
-            <span class="close-modal" id="close-ai-modal">&times;</span>
-            <div class="document-header">
-                <h2 class="document-title">Configuración de Inteligencia Artificial</h2>
-                <p>Personaliza el comportamiento de la IA según tus necesidades</p>
-            </div>
-            <div class="document-body">
-                <div class="ai-settings-form">
-                    <div class="form-group">
-                        <label for="ai-model">Modelo de IA:</label>
-                        <select id="ai-model">
-                            <option value="balanced">Equilibrado (recomendado)</option>
-                            <option value="accurate">Máxima precisión (más lento)</option>
-                            <option value="fast">Máxima velocidad (menos preciso)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>
-                            <input type="checkbox" id="ai-real-time" checked>
-                            Análisis en tiempo real
-                        </label>
-                    </div>
-                    <div class="form-group">
-                        <label>
-                            <input type="checkbox" id="ai-personalization" checked>
-                            Personalización basada en uso
-                        </label>
-                    </div>
-                    <div class="form-group">
-                        <label for="ai-language">Idioma preferido:</label>
-                        <select id="ai-language">
-                            <option value="es">Español</option>
-                            <option value="en">Inglés</option>
-                            <option value="auto">Detectar automáticamente</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <div class="document-actions">
-                <button class="btn btn-primary" id="save-ai-settings">
-                    <i class="fas fa-save"></i> Guardar configuración
-                </button>
-                <button class="btn btn-outline" id="close-ai-settings">
-                    <i class="fas fa-times"></i> Cerrar
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div class="notification" id="notification">
-        <i class="fas fa-check-circle"></i> <span id="notification-text"></span>
-    </div>
-
     <!-- Scripts externos -->
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
-    <!-- Nuestros archivos JS principales -->
+    <!-- Nuestros archivos JS -->
     <script src="js/utils.js"></script>
     <script src="js/storage.js"></script>
     <script src="js/stateManager.js"></script>
@@ -394,47 +604,77 @@
     <script src="js/aiIntegration.js"></script>
     <script src="js/main.js"></script>
 
-    <!-- Inicialización -->
+    <!-- Verificación de archivos CSS -->
     <script>
-        // Establecer la hora actual en el primer mensaje
         document.addEventListener('DOMContentLoaded', function() {
+            // Establecer la hora actual
             const now = new Date();
             document.getElementById('current-time').textContent = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             
-            // Inicializar tooltips
-            const tooltipElements = document.querySelectorAll('[data-tooltip]');
-            tooltipElements.forEach(el => {
-                el.addEventListener('mouseenter', showTooltip);
-                el.addEventListener('mouseleave', hideTooltip);
+            // Verificar archivos CSS
+            const cssFiles = [
+                'css/style.css',
+                'css/components/header.css',
+                'css/components/card.css',
+                'css/components/chat.css',
+                'css/components/upload.css',
+                'css/components/schedule.css',
+                'css/components/modal.css',
+                'css/ai.css'
+            ];
+            
+            let allLoaded = true;
+            
+            cssFiles.forEach((file, index) => {
+                const link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = file;
+                
+                link.onload = function() {
+                    document.querySelectorAll('.status')[index].textContent = '✅ Cargado';
+                    document.querySelectorAll('.status')[index].style.color = 'green';
+                };
+                
+                link.onerror = function() {
+                    document.querySelectorAll('.status')[index].textContent = '❌ No encontrado';
+                    document.querySelectorAll('.status')[index].style.color = 'red';
+                    allLoaded = false;
+                };
+                
+                document.head.appendChild(link);
             });
             
-            // Inicializar la aplicación
-            initializeApp();
-        });
-        
-        function initializeApp() {
-            console.log('Inicializando Organizador Inteligente con IA...');
-            // La inicialización completa se maneja en main.js
-        }
-        
-        function showTooltip(e) {
-            const tooltipText = this.getAttribute('data-tooltip');
-            const tooltip = document.createElement('div');
-            tooltip.className = 'tooltip';
-            tooltip.textContent = tooltipText;
-            document.body.appendChild(tooltip);
+            // Verificar después de un tiempo
+            setTimeout(() => {
+                if (allLoaded) {
+                    document.getElementById('css-status').textContent = '✅ Todos los archivos CSS cargados correctamente';
+                    document.getElementById('css-status').style.color = 'green';
+                } else {
+                    document.getElementById('css-status').textContent = '❌ Algunos archivos CSS no se encontraron';
+                    document.getElementById('css-status').style.color = 'red';
+                    
+                    // Mostrar notificación con instrucciones
+                    const notification = document.createElement('div');
+                    notification.className = 'notification show';
+                    notification.innerHTML = `
+                        <strong>Faltan archivos CSS</strong>
+                        <p>Algunos archivos CSS no se encontraron. Verifica que tengas la estructura de carpetas correcta.</p>
+                    `;
+                    document.body.appendChild(notification);
+                    
+                    // Ocultar notificación después de 5 segundos
+                    setTimeout(() => {
+                        notification.remove();
+                    }, 5000);
+                }
+            }, 2000);
             
-            const rect = this.getBoundingClientRect();
-            tooltip.style.top = (rect.top - tooltip.offsetHeight - 5) + 'px';
-            tooltip.style.left = (rect.left + (rect.width - tooltip.offsetWidth) / 2) + 'px';
-        }
-        
-        function hideTooltip() {
-            const tooltip = document.querySelector('.tooltip');
-            if (tooltip) {
-                tooltip.remove();
-            }
-        }
+            // Toggle para configuración de IA
+            document.querySelector('.ai-config-toggle').addEventListener('click', function() {
+                const content = document.querySelector('.ai-config-content');
+                content.style.display = content.style.display === 'none' ? 'block' : 'none';
+            });
+        });
     </script>
 </body>
 </html>
