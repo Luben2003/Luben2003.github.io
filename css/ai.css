@@ -65,8 +65,23 @@
     cursor: pointer;
 }
 
+.help-text {
+    font-size: 0.8rem;
+    color: var(--gray);
+    margin-top: 5px;
+}
+
+.help-text a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+.help-text a:hover {
+    text-decoration: underline;
+}
+
 /* Indicadores de IA en la interfaz */
-.file-item .ai-indicator {
+.ai-indicator {
     margin-left: 10px;
     font-size: 0.8rem;
     padding: 2px 8px;
@@ -75,7 +90,7 @@
     color: white;
 }
 
-.task .ai-tags {
+.ai-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 5px;
@@ -91,7 +106,7 @@
 }
 
 /* Panel de resultados de IA */
-.ai-results-panel {
+.ai-analysis-result {
     margin-top: 15px;
     padding: 15px;
     background-color: var(--light-bg);
@@ -99,34 +114,17 @@
     display: none;
 }
 
-.ai-results-panel.visible {
+.ai-analysis-result.visible {
     display: block;
 }
 
-.ai-results-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.ai-results-title {
-    font-weight: 600;
-    color: var(--primary);
-    margin: 0;
-}
-
-.ai-results-content {
-    font-size: 0.9rem;
-}
-
-.ai-result-section {
+.ai-result-content > div {
     margin-bottom: 15px;
 }
 
-.ai-result-section h5 {
-    margin: 0 0 5px 0;
-    color: var(--dark);
+.ai-result-content h5 {
+    margin: 0 0 8px 0;
+    color: var(--primary);
     font-size: 0.9rem;
 }
 
@@ -154,11 +152,15 @@ body.dark-theme .ai-config-item label {
     color: #e2e8f0;
 }
 
-body.dark-theme .ai-results-panel {
+body.dark-theme .ai-analysis-result {
     background: #4a5568;
 }
 
 body.dark-theme .ai-keyword {
     background: #2d3748;
     color: #6c8dfa;
+}
+
+body.dark-theme .help-text {
+    color: #a0aec0;
 }
