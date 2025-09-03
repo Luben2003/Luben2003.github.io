@@ -5,47 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Organizador Inteligente con OCR y IA</title>
     
-    <!-- Meta tags para PWA -->
-    <meta name="theme-color" content="#4361ee">
-    <meta name="description" content="Aplicación para organizar documentos con reconocimiento OCR e IA integrado">
-    <meta name="keywords" content="OCR, IA, organizador, documentos, inteligente, análisis">
-    <meta name="author" content="Organizador Inteligente">
-    
-    <!-- Preconexión para mejorar rendimiento -->
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-    <link rel="preconnect" href="https://cdn.jsdelivr.net">
-    
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Nuestros archivos CSS con verificación -->
-    <link rel="stylesheet" href="css/style.css" onerror="alert('Falta: css/style.css')">
-    <link rel="stylesheet" href="css/components/header.css" onerror="alert('Falta: css/components/header.css')">
-    <link rel="stylesheet" href="css/components/card.css" onerror="alert('Falta: css/components/card.css')">
-    <link rel="stylesheet" href="css/components/chat.css" onerror="alert('Falta: css/components/chat.css')">
-    <link rel="stylesheet" href="css/components/upload.css" onerror="alert('Falta: css/components/upload.css')">
-    <link rel="stylesheet" href="css/components/schedule.css" onerror="alert('Falta: css/components/schedule.css')">
-    <link rel="stylesheet" href="css/components/modal.css" onerror="alert('Falta: css/components/modal.css')">
-    <link rel="stylesheet" href="css/ai.css" onerror="alert('Falta: css/ai.css')">
-    
-    <!-- Estilos de respaldo por si falla la carga -->
     <style>
-        /* Estilos mínimos de respaldo */
+        /* Variables CSS para consistencia */
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --warning: #f9c74f;
+            --danger: #f94144;
+            --gray: #6c757d;
+            --light-bg: #edf2f4;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+
         body {
             background: linear-gradient(135deg, #edf2f4 0%, #e5e5e5 100%);
-            color: #212529;
+            color: var(--dark);
             line-height: 1.6;
             min-height: 100vh;
             padding: 20px;
+            transition: margin-left 0.3s ease;
         }
-        
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -53,7 +46,233 @@
             grid-template-columns: 1fr 1fr;
             gap: 20px;
         }
-        
+
+        /* ================== BARRA LATERAL DESLIZABLE ================== */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 300px;
+            height: 100vh;
+            background: white;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: left 0.3s ease;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .sidebar.open {
+            left: 0;
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+        }
+
+        .sidebar-overlay.visible {
+            display: block;
+        }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .sidebar-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+        }
+
+        .sidebar-section {
+            margin-bottom: 25px;
+        }
+
+        .sidebar-section h3 {
+            margin-bottom: 15px;
+            color: var(--primary);
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .category-btn {
+            padding: 12px;
+            border: 2px solid var(--primary);
+            border-radius: 10px;
+            background: white;
+            color: var(--primary);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .category-btn:hover, 
+        .category-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .sidebar-menu-item {
+            width: 100%;
+            padding: 12px 15px;
+            border: none;
+            background: none;
+            text-align: left;
+            cursor: pointer;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-menu-item:hover {
+            background: var(--light-bg);
+        }
+
+        .recent-files {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .recent-file {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            background: var(--light-bg);
+        }
+
+        .recent-file i {
+            color: var(--primary);
+        }
+
+        .recent-file span {
+            flex: 1;
+            font-size: 0.9rem;
+        }
+
+        .recent-file small {
+            color: var(--gray);
+            font-size: 0.8rem;
+        }
+
+        /* ================== HEADER ================== */
+        header {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo i {
+            font-size: 2.5rem;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .tagline {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: white;
+            cursor: pointer;
+        }
+
+        .search-wrapper {
+            position: relative;
+            width: 300px;
+        }
+
+        #global-search {
+            width: 100%;
+            padding: 10px 15px;
+            padding-right: 45px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            outline: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        #global-search::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        #search-btn {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            cursor: pointer;
+        }
+
+        .user i {
+            font-size: 2rem;
+        }
+
+        /* ================== TARJETAS ================== */
         .card {
             background: white;
             border-radius: 15px;
@@ -63,9 +282,9 @@
             display: flex;
             flex-direction: column;
         }
-        
+
         .card-header {
-            background: linear-gradient(135deg, #4361ee, #3a0ca3);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
             padding: 15px 20px;
             font-size: 1.2rem;
@@ -74,7 +293,7 @@
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .card-body {
             padding: 20px;
             flex: 1;
@@ -82,7 +301,248 @@
             display: flex;
             flex-direction: column;
         }
-        
+
+        /* ================== CHAT ================== */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            min-height: 200px;
+        }
+
+        .message {
+            padding: 12px 16px;
+            border-radius: 18px;
+            max-width: 80%;
+            animation: fadeIn 0.3s ease-in;
+            position: relative;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .user-message {
+            background-color: var(--primary);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+        }
+
+        .bot-message {
+            background-color: var(--light-bg);
+            color: var(--dark);
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            margin-top: 5px;
+            text-align: right;
+        }
+
+        .input-area {
+            display: flex;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+            gap: 10px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #ced4da;
+            border-radius: 20px;
+            outline: none;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background-color: var(--secondary);
+            transform: rotate(5deg);
+        }
+
+        /* ================== SUBIDA ================== */
+        .upload-area {
+            border: 2px dashed var(--primary);
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px;
+            margin: 15px 0;
+            cursor: pointer;
+            transition: all 0.3s;
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+
+        .upload-area:hover {
+            background-color: rgba(67, 97, 238, 0.1);
+            border-color: var(--secondary);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .file-meta {
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-top: 10px;
+        }
+
+        .file-list {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: var(--light-bg);
+            border-radius: 8px;
+            gap: 10px;
+        }
+
+        .file-icon {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .file-info {
+            flex: 1;
+        }
+
+        .file-name {
+            font-weight: 600;
+        }
+
+        .file-categories {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .category-tag {
+            padding: 3px 8px;
+            background: white;
+            border: 1px solid var(--primary);
+            border-radius: 12px;
+            font-size: 0.7rem;
+            color: var(--primary);
+        }
+
+        .file-actions {
+            display: flex;
+            align-items: center;
+        }
+
+        .storage-info {
+            font-size: 0.8rem;
+            padding: 10px;
+            background-color: var(--light-bg);
+            border-radius: 8px;
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .progress-bar {
+            height: 5px;
+            background-color: #e9ecef;
+            border-radius: 3px;
+            margin-top: 10px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .progress {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .ocr-result {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: var(--light-bg);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            display: none;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .ocr-result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .btn-edit-ocr {
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        #ocr-text {
+            line-height: 1.5;
+            min-height: 100px;
+        }
+
+        #ocr-text[contenteditable="true"] {
+            background: white;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
         .btn {
             padding: 12px 15px;
             border-radius: 8px;
@@ -99,248 +559,506 @@
             min-width: 120px;
             text-align: center;
         }
-        
+
         .btn-primary {
-            background: linear-gradient(135deg, #4361ee, #3a0ca3);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
         }
-        
+
         .btn-primary:hover {
             opacity: 0.9;
             transform: translateY(-2px);
         }
-        
+
         .btn-outline {
             background: transparent;
-            color: #4361ee;
-            border: 2px solid #4361ee;
+            color: var(--primary);
+            border: 2px solid var(--primary);
         }
-        
+
         .btn-outline:hover {
-            background-color: #4361ee;
+            background-color: var(--primary);
             color: white;
         }
-        
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            border-radius: 8px;
-            background-color: #4cc9f0;
-            color: white;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            transform: translateX(100%);
-            transition: transform 0.3s ease-out;
-            z-index: 1000;
-        }
-        
-        .notification.show {
-            transform: translateX(0);
-        }
-        
-        /* Estilos para el área de chat */
-        .chat-container {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-        
-        .chat-messages {
-            flex: 1;
-            padding: 10px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            min-height: 200px;
-        }
-        
-        .message {
-            padding: 12px 16px;
-            border-radius: 18px;
-            max-width: 80%;
-            position: relative;
-        }
-        
-        .user-message {
-            background-color: #4361ee;
-            color: white;
-            align-self: flex-end;
-            border-bottom-right-radius: 5px;
-        }
-        
-        .bot-message {
-            background-color: #edf2f4;
-            color: #212529;
-            align-self: flex-start;
-            border-bottom-left-radius: 5px;
-        }
-        
-        .message-time {
-            font-size: 0.7rem;
-            opacity: 0.7;
-            margin-top: 5px;
-            text-align: right;
-        }
-        
-        .input-area {
-            display: flex;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border-top: 1px solid #dee2e6;
-            gap: 10px;
-        }
-        
-        input[type="text"] {
-            flex: 1;
-            padding: 12px 15px;
-            border: 1px solid #ced4da;
-            border-radius: 20px;
-            outline: none;
-            font-size: 16px;
-        }
-        
-        /* Estilos para el área de subida */
-        .upload-area {
-            border: 2px dashed #4361ee;
-            padding: 30px;
-            text-align: center;
-            border-radius: 10px;
-            margin: 15px 0;
-            cursor: pointer;
-            transition: all 0.3s;
-            background-color: rgba(67, 97, 238, 0.05);
-        }
-        
-        .upload-area:hover {
-            background-color: rgba(67, 97, 238, 0.1);
-            border-color: #3a0ca3;
-        }
-        
-        .upload-icon {
-            font-size: 3rem;
-            color: #4361ee;
-            margin-bottom: 15px;
-        }
-        
-        .file-list {
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        
-        .file-item {
-            display: flex;
-            align-items: center;
-            padding: 10px;
-            background-color: #edf2f4;
-            border-radius: 8px;
-            gap: 10px;
-        }
-        
-        .file-icon {
-            font-size: 1.5rem;
-            color: #4361ee;
-        }
-        
-        .file-info {
-            flex: 1;
-        }
-        
-        .file-name {
-            font-weight: 600;
-        }
-        
-        .file-meta {
-            font-size: 0.8rem;
-            color: #6c757d;
-        }
-        
-        .storage-info {
-            font-size: 0.8rem;
-            padding: 10px;
-            background-color: #edf2f4;
-            border-radius: 8px;
-            margin-top: 15px;
-            text-align: center;
-        }
-        
-        .controls {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-            gap: 10px;
-        }
-        
-        /* Estilos para el cronograma */
+
+        /* ================== CRONOGRAMA ================== */
         .schedule-controls {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
             margin-bottom: 20px;
         }
-        
+
         .schedule-view {
             margin-top: 20px;
             flex: 1;
             overflow-y: auto;
         }
-        
+
+        .task {
+            padding: 15px;
+            border-left: 4px solid var(--primary);
+            background-color: white;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+        }
+
+        .task:hover {
+            transform: translateX(5px);
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .task-title {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .task-date {
+            font-size: 0.9rem;
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .task-desc {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 10px;
+        }
+
+        .task-priority {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .priority-high {
+            background-color: rgba(249, 65, 68, 0.2);
+            color: var(--danger);
+        }
+
+        .priority-medium {
+            background-color: rgba(249, 199, 79, 0.2);
+            color: #d4a200;
+        }
+
+        .priority-low {
+            background-color: rgba(76, 201, 240, 0.2);
+            color: var(--success);
+        }
+
         .empty-state {
             text-align: center;
             padding: 30px;
-            color: #6c757d;
+            color: var(--gray);
         }
-        
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #ced4da;
+        }
+
+        .tag {
+            display: inline-block;
+            background-color: var(--secondary);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+
+        /* Insights de IA */
+        .ai-insights {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: var(--light-bg);
+            border-radius: 10px;
+        }
+
+        .insights-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .insight-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .insight-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .insight-data h5 {
+            margin: 0 0 5px 0;
+            font-size: 0.9rem;
+        }
+
+        .insight-data p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        /* ================== CONFIGURACIÓN IA ================== */
+        .ai-config-panel {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            margin-bottom: 20px;
+            grid-column: 1 / -1;
+        }
+
+        .ai-config-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .ai-config-header h4 {
+            color: var(--primary);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ai-config-toggle {
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .ai-config-content {
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+
+        .ai-config-item {
+            margin-bottom: 15px;
+        }
+
+        .ai-config-item label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .ai-config-item input[type="text"],
+        .ai-config-item input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .ai-config-item button {
+            padding: 8px 15px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .help-text {
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-top: 5px;
+        }
+
+        .help-text a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .help-text a:hover {
+            text-decoration: underline;
+        }
+
+        /* Indicadores de IA en la interfaz */
+        .ai-indicator {
+            margin-left: 10px;
+            font-size: 0.8rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: var(--success);
+            color: white;
+        }
+
+        .ai-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .ai-tag {
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 10px;
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+        }
+
+        /* Panel de resultados de IA */
+        .ai-analysis-result {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: var(--light-bg);
+            border-radius: 10px;
+            display: none;
+        }
+
+        .ai-analysis-result.visible {
+            display: block;
+        }
+
+        .ai-result-content > div {
+            margin-bottom: 15px;
+        }
+
+        .ai-result-content h5 {
+            margin: 0 0 8px 0;
+            color: var(--primary);
+            font-size: 0.9rem;
+        }
+
+        .ai-keywords {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .ai-keyword {
+            padding: 3px 8px;
+            background: white;
+            border: 1px solid var(--primary);
+            border-radius: 12px;
+            font-size: 0.8rem;
+            color: var(--primary);
+        }
+
+        /* Footer */
         .footer {
             grid-column: 1 / -1;
             text-align: center;
             padding: 20px;
-            color: #6c757d;
+            color: var(--gray);
             font-size: 0.9rem;
         }
-        
-        /* Estilos para la verificación de archivos */
-        .status {
-            font-weight: bold;
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .footer-links a {
+            color: var(--gray);
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        /* Notificación */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            background-color: var(--success);
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transform: translateX(100%);
+            transition: transform 0.3s ease-out;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+            
+            .search-wrapper {
+                width: 100%;
+                max-width: none;
+            }
+            
+            .sidebar {
+                width: 280px;
+                left: -280px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .categories-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-controls {
+                flex-wrap: wrap;
+            }
+            
+            .search-wrapper {
+                order: 3;
+                margin-top: 10px;
+                width: 100%;
+            }
+            
+            .insights-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Barra lateral deslizable -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>Menú de Navegación</h3>
+            <button class="sidebar-close" id="sidebar-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="sidebar-section">
+            <h3><i class="fas fa-filter"></i> Categorías</h3>
+            <div class="categories-grid">
+                <button class="category-btn active" data-category="all">Todas</button>
+                <button class="category-btn" data-category="work">Trabajo</button>
+                <button class="category-btn" data-category="study">Estudio</button>
+                <button class="category-btn" data-category="personal">Personal</button>
+                <button class="category-btn" data-category="other">Otros</button>
+            </div>
+        </div>
+        
+        <div class="sidebar-section">
+            <h3><i class="fas fa-cog"></i> Configuración</h3>
+            <div class="sidebar-menu">
+                <button class="sidebar-menu-item">
+                    <i class="fas fa-robot"></i> Configuración de IA
+                </button>
+                <button class="sidebar-menu-item">
+                    <i class="fas fa-moon"></i> Tema Oscuro
+                </button>
+                <button class="sidebar-menu-item">
+                    <i class="fas fa-bell"></i> Notificaciones
+                </button>
+                <button class="sidebar-menu-item">
+                    <i class="fas fa-database"></i> Almacenamiento
+                </button>
+            </div>
+        </div>
+        
+        <div class="sidebar-section">
+            <h3><i class="fas fa-history"></i> Recientes</h3>
+            <div class="recent-files">
+                <div class="recent-file">
+                    <i class="fas fa-file-pdf"></i>
+                    <span>Documento.pdf</span>
+                    <small>Hace 2 horas</small>
+                </div>
+                <div class="recent-file">
+                    <i class="fas fa-file-word"></i>
+                    <span>Informe.docx</span>
+                    <small>Hace 1 día</small>
+                </div>
+                <div class="recent-file">
+                    <i class="fas fa-file-image"></i>
+                    <span>Imagen.jpg</span>
+                    <small>Hace 2 días</small>
+                </div>
+            </div>
+        </div>
+    </aside>
+
     <div class="container">
         <!-- Panel de configuración de IA -->
-        <div class="card">
-            <div class="card-header">
-                <span><i class="fas fa-robot"></i> Configuración de IA</span>
+        <div class="ai-config-panel">
+            <div class="ai-config-header">
+                <h4><i class="fas fa-robot"></i> Configuración de IA</h4>
                 <button class="ai-config-toggle"><i class="fas fa-cog"></i></button>
             </div>
-            <div class="card-body">
-                <div class="ai-config-content" style="display: none;">
-                    <div class="ai-config-item">
-                        <label for="ai-api-key">API Key (Hugging Face):</label>
-                        <input type="password" id="ai-api-key" placeholder="hf_...">
-                        <button id="save-ai-key">Guardar</button>
-                        <p class="help-text">Obtén tu API key en <a href="https://huggingface.co" target="_blank">huggingface.co</a></p>
-                    </div>
-                    <div class="ai-config-item">
-                        <label>
-                            <input type="checkbox" id="ai-auto-analysis" checked>
-                            Análisis automático con IA
-                        </label>
-                    </div>
-                    <div class="ai-config-item">
-                        <button id="ai-analyze-all" class="btn btn-outline">
-                            <i class="fas fa-brain"></i> Analizar todo con IA
-                        </button>
-                    </div>
+            <div class="ai-config-content" style="display: none;">
+                <div class="ai-config-item">
+                    <label for="ai-api-key">API Key (Hugging Face):</label>
+                    <input type="password" id="ai-api-key" placeholder="hf_...">
+                    <button id="save-ai-key">Guardar</button>
+                    <p class="help-text">Obtén tu API key en <a href="https://huggingface.co" target="_blank">huggingface.co</a></p>
+                </div>
+                <div class="ai-config-item">
+                    <label>
+                        <input type="checkbox" id="ai-auto-analysis" checked>
+                        Análisis automático con IA
+                    </label>
+                </div>
+                <div class="ai-config-item">
+                    <button id="ai-analyze-all" class="btn btn-outline">
+                        <i class="fas fa-brain"></i> Analizar todo con IA
+                    </button>
                 </div>
             </div>
         </div>
         
         <header>
             <div class="logo">
+                <button class="menu-toggle" id="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
                 <i class="fas fa-robot"></i>
                 <div>
                     <h1>Organizador Inteligente</h1>
@@ -348,12 +1066,12 @@
                 </div>
             </div>
             <div class="header-controls">
-                <div class="search-container">
+                <div class="search-wrapper">
                     <input type="text" id="global-search" placeholder="Buscar en documentos...">
                     <button id="search-btn"><i class="fas fa-search"></i></button>
                 </div>
                 <div class="user">
-                    <i class="fas fa-user-circle fa-2x"></i>
+                    <i class="fas fa-user-circle"></i>
                 </div>
             </div>
         </header>
@@ -557,27 +1275,6 @@
             </div>
         </div>
         
-        <!-- Sección de verificación de archivos CSS -->
-        <div class="card" style="grid-column: 1 / -1;">
-            <div class="card-header">
-                <span>Verificación de Archivos CSS</span>
-                <i class="fas fa-check-circle"></i>
-            </div>
-            <div class="card-body">
-                <p>Verificando archivos CSS... <span id="css-status">En proceso</span></p>
-                <ul id="css-file-list" style="list-style: none; padding: 0;">
-                    <li>css/style.css: <span class="status">Verificando...</span></li>
-                    <li>css/components/header.css: <span class="status">Verificando...</span></li>
-                    <li>css/components/card.css: <span class="status">Verificando...</span></li>
-                    <li>css/components/chat.css: <span class="status">Verificando...</span></li>
-                    <li>css/components/upload.css: <span class="status">Verificando...</span></li>
-                    <li>css/components/schedule.css: <span class="status">Verificando...</span></li>
-                    <li>css/components/modal.css: <span class="status">Verificando...</span></li>
-                    <li>css/ai.css: <span class="status">Verificando...</span></li>
-                </ul>
-            </div>
-        </div>
-        
         <div class="footer">
             <p>Organizador Inteligente con OCR & IA &copy; 2023 - <a href="https://github.com/Luben2003/organice" target="_blank">Ver en GitHub</a></p>
             <div class="footer-links">
@@ -588,92 +1285,152 @@
         </div>
     </div>
 
-    <!-- Scripts externos -->
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    
-    <!-- Nuestros archivos JS -->
-    <script src="js/utils.js"></script>
-    <script src="js/storage.js"></script>
-    <script src="js/stateManager.js"></script>
-    <script src="js/pluginSystem.js"></script>
-    <script src="js/chat.js"></script>
-    <script src="js/ocr.js"></script>
-    <script src="js/schedule.js"></script>
-    <script src="js/aiProcessor.js"></script>
-    <script src="js/aiIntegration.js"></script>
-    <script src="js/main.js"></script>
-
-    <!-- Verificación de archivos CSS -->
     <script>
+        // Funcionalidad de la barra lateral
         document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+            const sidebarClose = document.getElementById('sidebar-close');
+            const menuToggle = document.getElementById('menu-toggle');
+            const body = document.body;
+            
+            // Función para abrir la barra lateral
+            function openSidebar() {
+                sidebar.classList.add('open');
+                sidebarOverlay.classList.add('visible');
+                body.classList.add('sidebar-open');
+            }
+            
+            // Función para cerrar la barra lateral
+            function closeSidebar() {
+                sidebar.classList.remove('open');
+                sidebarOverlay.classList.remove('visible');
+                body.classList.remove('sidebar-open');
+            }
+            
+            // Event listeners
+            if (menuToggle) {
+                menuToggle.addEventListener('click', openSidebar);
+            }
+            
+            if (sidebarClose) {
+                sidebarClose.addEventListener('click', closeSidebar);
+            }
+            
+            if (sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', closeSidebar);
+            }
+            
+            // Categorías
+            const categoryButtons = document.querySelectorAll('.category-btn');
+            categoryButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    categoryButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Aquí puedes añadir la lógica para filtrar por categoría
+                    const category = this.dataset.category;
+                    console.log('Categoría seleccionada:', category);
+                    
+                    // Mostrar notificación
+                    showNotification(`Filtro aplicado: ${this.textContent}`);
+                });
+            });
+            
+            // Menú de items de la sidebar
+            const menuItems = document.querySelectorAll('.sidebar-menu-item');
+            menuItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // Aquí puedes añadir la lógica para cada item del menú
+                    console.log('Menú clickeado:', this.textContent.trim());
+                    showNotification(`Acción: ${this.textContent.trim()}`);
+                });
+            });
+            
+            // Buscador
+            const searchBtn = document.getElementById('search-btn');
+            const globalSearch = document.getElementById('global-search');
+            
+            if (searchBtn && globalSearch) {
+                searchBtn.addEventListener('click', function() {
+                    if (globalSearch.value.trim() !== '') {
+                        console.log('Búsqueda:', globalSearch.value);
+                        showNotification(`Buscando: ${globalSearch.value}`);
+                    }
+                });
+                
+                globalSearch.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter' && this.value.trim() !== '') {
+                        console.log('Búsqueda (Enter):', this.value);
+                        showNotification(`Buscando: ${this.value}`);
+                    }
+                });
+            }
+            
+            // Configuración de IA
+            const aiConfigToggle = document.querySelector('.ai-config-toggle');
+            const aiConfigContent = document.querySelector('.ai-config-content');
+            
+            if (aiConfigToggle && aiConfigContent) {
+                aiConfigToggle.addEventListener('click', function() {
+                    aiConfigContent.style.display = aiConfigContent.style.display === 'none' ? 'block' : 'none';
+                });
+            }
+            
             // Establecer la hora actual
             const now = new Date();
-            document.getElementById('current-time').textContent = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            if (document.getElementById('current-time')) {
+                document.getElementById('current-time').textContent = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            }
             
-            // Verificar archivos CSS
-            const cssFiles = [
-                'css/style.css',
-                'css/components/header.css',
-                'css/components/card.css',
-                'css/components/chat.css',
-                'css/components/upload.css',
-                'css/components/schedule.css',
-                'css/components/modal.css',
-                'css/ai.css'
-            ];
-            
-            let allLoaded = true;
-            
-            cssFiles.forEach((file, index) => {
-                const link = document.createElement('link');
-                link.rel = 'stylesheet';
-                link.href = file;
+            // Función para mostrar notificaciones
+            function showNotification(message) {
+                const notification = document.createElement('div');
+                notification.className = 'notification';
+                notification.innerHTML = `<i class="fas fa-info-circle"></i> ${message}`;
+                document.body.appendChild(notification);
                 
-                link.onload = function() {
-                    document.querySelectorAll('.status')[index].textContent = '✅ Cargado';
-                    document.querySelectorAll('.status')[index].style.color = 'green';
-                };
+                // Mostrar notificación
+                setTimeout(() => {
+                    notification.classList.add('show');
+                }, 100);
                 
-                link.onerror = function() {
-                    document.querySelectorAll('.status')[index].textContent = '❌ No encontrado';
-                    document.querySelectorAll('.status')[index].style.color = 'red';
-                    allLoaded = false;
-                };
-                
-                document.head.appendChild(link);
-            });
-            
-            // Verificar después de un tiempo
-            setTimeout(() => {
-                if (allLoaded) {
-                    document.getElementById('css-status').textContent = '✅ Todos los archivos CSS cargados correctamente';
-                    document.getElementById('css-status').style.color = 'green';
-                } else {
-                    document.getElementById('css-status').textContent = '❌ Algunos archivos CSS no se encontraron';
-                    document.getElementById('css-status').style.color = 'red';
-                    
-                    // Mostrar notificación con instrucciones
-                    const notification = document.createElement('div');
-                    notification.className = 'notification show';
-                    notification.innerHTML = `
-                        <strong>Faltan archivos CSS</strong>
-                        <p>Algunos archivos CSS no se encontraron. Verifica que tengas la estructura de carpetas correcta.</p>
-                    `;
-                    document.body.appendChild(notification);
-                    
-                    // Ocultar notificación después de 5 segundos
+                // Ocultar notificación después de 3 segundos
+                setTimeout(() => {
+                    notification.classList.remove('show');
                     setTimeout(() => {
                         notification.remove();
-                    }, 5000);
-                }
-            }, 2000);
+                    }, 300);
+                }, 3000);
+            }
             
-            // Toggle para configuración de IA
-            document.querySelector('.ai-config-toggle').addEventListener('click', function() {
-                const content = document.querySelector('.ai-config-content');
-                content.style.display = content.style.display === 'none' ? 'block' : 'none';
-            });
+            // Demo de funcionalidad de arrastrar y soltar
+            const dropZone = document.getElementById('drop-zone');
+            const fileInput = document.getElementById('file-input');
+            
+            if (dropZone && fileInput) {
+                dropZone.addEventListener('click', () => {
+                    fileInput.click();
+                });
+                
+                dropZone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    dropZone.style.backgroundColor = 'rgba(67, 97, 238, 0.15)';
+                });
+                
+                dropZone.addEventListener('dragleave', () => {
+                    dropZone.style.backgroundColor = 'rgba(67, 97, 238, 0.05)';
+                });
+                
+                dropZone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    dropZone.style.backgroundColor = 'rgba(67, 97, 238, 0.05)';
+                    
+                    if (e.dataTransfer.files.length > 0) {
+                        showNotification(`Archivo(s) listo(s) para procesar: ${e.dataTransfer.files.length}`);
+                    }
+                });
+            }
         });
     </script>
 </body>
