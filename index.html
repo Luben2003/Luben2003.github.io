@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Organizador Inteligente con OCR</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Incluir Tesseract.js para OCR -->
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root {
             --primary: #4361ee;
@@ -103,6 +103,8 @@
             padding: 20px;
             flex: 1;
             overflow-y: auto;
+            display: flex;
+            flex-direction: column;
         }
         
         .chat-container {
@@ -118,6 +120,7 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
+            min-height: 200px;
         }
         
         .message {
@@ -254,6 +257,8 @@
         
         .schedule-view {
             margin-top: 20px;
+            flex: 1;
+            overflow-y: auto;
         }
         
         .task {
@@ -325,7 +330,7 @@
         }
         
         .btn {
-            padding: 12px 20px;
+            padding: 12px 15px;
             border-radius: 8px;
             border: none;
             font-weight: 600;
@@ -333,7 +338,12 @@
             transition: all 0.3s;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
+            font-size: 14px;
+            white-space: nowrap;
+            min-width: 120px;
+            text-align: center;
         }
         
         .btn-primary {
@@ -448,6 +458,119 @@
             margin-top: 5px;
             display: inline-block;
         }
+
+        /* Media queries para botones en dispositivos pequeños */
+        @media (max-width: 600px) {
+            .controls {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .btn span {
+                display: block;
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        /* Estilos específicos para la sección de cronograma */
+        .schedule-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .schedule-controls .btn {
+            flex: 1;
+            min-width: 140px;
+        }
+
+        /* Modal para visualizar el documento */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow: auto;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+        }
+        
+        .close-modal:hover {
+            color: var(--dark);
+        }
+        
+        .document-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--primary);
+        }
+        
+        .document-title {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .document-date {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        .document-task {
+            margin-bottom: 15px;
+            padding: 15px;
+            border-left: 4px solid var(--primary);
+            background-color: var(--light-bg);
+            border-radius: 8px;
+        }
+        
+        .document-task-high {
+            border-left-color: var(--danger);
+        }
+        
+        .document-task-medium {
+            border-left-color: var(--warning);
+        }
+        
+        .document-task-low {
+            border-left-color: var(--success);
+        }
+        
+        .document-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+        }
     </style>
 </head>
 <body>
@@ -551,10 +674,10 @@
                 
                 <div class="controls">
                     <button class="btn btn-outline" id="clear-files">
-                        <i class="fas fa-trash"></i> Limpiar
+                        <i class="fas fa-trash"></i> <span>Limpiar</span>
                     </button>
                     <button class="btn btn-primary" id="generate-schedule">
-                        <i class="fas fa-calendar-alt"></i> Generar Cronograma
+                        <i class="fas fa-calendar-alt"></i> <span>Generar Cronograma</span>
                     </button>
                 </div>
             </div>
@@ -566,51 +689,54 @@
                 <i class="fas fa-calendar-check"></i>
             </div>
             <div class="card-body">
-                <div class="controls">
+                <div class="schedule-controls">
                     <button class="btn btn-outline" id="save-schedule">
-                        <i class="fas fa-save"></i> Guardar Cronograma
+                        <i class="fas fa-save"></i> <span>Guardar Cronograma</span>
                     </button>
                     <button class="btn btn-outline" id="load-schedule">
-                        <i class="fas fa-folder-open"></i> Cargar Cronograma
+                        <i class="fas fa-folder-open"></i> <span>Cargar Cronograma</span>
+                    </button>
+                    <button class="btn btn-outline" id="view-document">
+                        <i class="fas fa-eye"></i> <span>Ver Documento</span>
                     </button>
                     <button class="btn btn-outline" id="export-schedule">
-                        <i class="fas fa-download"></i> Exportar a PDF
+                        <i class="fas fa-download"></i> <span>Exportar a PDF</span>
                     </button>
                 </div>
                 
                 <div class="schedule-view" id="schedule-view">
-                    <div class="task">
-                        <div class="task-header">
-                            <div class="task-title">Estudiar para examen de Matemáticas</div>
-                            <div class="task-date">15 Mayo, 2023</div>
-                        </div>
-                        <div class="task-desc">Repasar apuntes de álgebra y geometría. Hacer ejercicios de práctica.</div>
-                        <span class="task-priority priority-high">Alta prioridad</span>
-                    </div>
-                    
-                    <div class="task">
-                        <div class="task-header">
-                            <div class="task-title">Terminar ensayo de Literatura</div>
-                            <div class="task-date">17 Mayo, 2023</div>
-                        </div>
-                        <div class="task-desc">Completar la redacción y revisar las citas bibliográficas.</div>
-                        <span class="task-priority priority-medium">Media prioridad</span>
-                    </div>
-                    
-                    <div class="task">
-                        <div class="task-header">
-                            <div class="task-title">Preparar presentación de Historia</div>
-                            <div class="task-date">20 Mayo, 2023</div>
-                        </div>
-                        <div class="task-desc">Crear diapositivas y preparar notas para la exposición.</div>
-                        <span class="task-priority priority-low">Baja prioridad</span>
+                    <div class="empty-state">
+                        <i class="fas fa-calendar-plus"></i>
+                        <p>No hay cronograma generado. Haz clic en "Generar Cronograma" para crear uno.</p>
                     </div>
                 </div>
             </div>
         </div>
         
         <div class="footer">
-            <p>Organizador Inteligente con OCR &copy; 2023 - Todos los derechos reservados</p>
+            <p>Organizador Inteligente con OCR &copy; 2023 - <a href="https://github.com/Luben2003/organice" target="_blank">Ver en GitHub</a></p>
+        </div>
+    </div>
+
+    <!-- Modal para visualizar el documento -->
+    <div class="modal" id="document-modal">
+        <div class="modal-content">
+            <span class="close-modal" id="close-modal">&times;</span>
+            <div class="document-header">
+                <h2 class="document-title" id="document-title">Cronograma de Actividades</h2>
+                <p class="document-date" id="document-date"></p>
+            </div>
+            <div class="document-body" id="document-body">
+                <!-- El contenido del documento se insertará aquí -->
+            </div>
+            <div class="document-actions">
+                <button class="btn btn-primary" id="print-document">
+                    <i class="fas fa-print"></i> Imprimir
+                </button>
+                <button class="btn btn-outline" id="close-document">
+                    <i class="fas fa-times"></i> Cerrar
+                </button>
+            </div>
         </div>
     </div>
 
@@ -619,6 +745,9 @@
     </div>
 
     <script>
+        // Configuración de jsPDF
+        const { jsPDF } = window.jspdf;
+
         document.addEventListener('DOMContentLoaded', function() {
             const chatMessages = document.getElementById('chat-messages');
             const userInput = document.getElementById('user-input');
@@ -631,12 +760,20 @@
             const saveScheduleBtn = document.getElementById('save-schedule');
             const loadScheduleBtn = document.getElementById('load-schedule');
             const exportScheduleBtn = document.getElementById('export-schedule');
+            const viewDocumentBtn = document.getElementById('view-document');
             const notification = document.getElementById('notification');
             const notificationText = document.getElementById('notification-text');
             const ocrProgress = document.getElementById('ocr-progress');
             const ocrProgressBar = document.getElementById('ocr-progress-bar');
             const ocrResult = document.getElementById('ocr-result');
             const ocrText = document.getElementById('ocr-text');
+            const documentModal = document.getElementById('document-modal');
+            const closeModal = document.getElementById('close-modal');
+            const closeDocument = document.getElementById('close-document');
+            const printDocument = document.getElementById('print-document');
+            const documentTitle = document.getElementById('document-title');
+            const documentDate = document.getElementById('document-date');
+            const documentBody = document.getElementById('document-body');
             
             let documents = [];
             let schedule = [];
@@ -729,6 +866,8 @@
                         response = 'Tu cronograma se guarda automáticamente en el almacenamiento local de tu navegador. También puedes usar el botón "Guardar Cronograma" para forzar el guardado.';
                     } else if (message.toLowerCase().includes('imagen') || message.toLowerCase().includes('ocr') || message.toLowerCase().includes('texto')) {
                         response = 'Puedo extraer texto de imágenes usando tecnología OCR. Solo sube una imagen con texto y la procesaré automáticamente.';
+                    } else if (message.toLowerCase().includes('ver documento') || message.toLowerCase().includes('documento')) {
+                        response = 'Puedes ver tu cronograma en formato de documento haciendo clic en el botón "Ver Documento".';
                     } else {
                         response = 'Entendido. ¿Necesitas ayuda para organizar documentos o generar un cronograma?';
                     }
@@ -1071,10 +1210,126 @@
                 loadFromLocalStorage();
             });
             
-            // Exportar a PDF (simulado)
-            exportScheduleBtn.addEventListener('click', () => {
-                showNotification('Funcionalidad de exportación a PDF en desarrollo');
+            // Ver documento
+            viewDocumentBtn.addEventListener('click', viewDocument);
+            
+            function viewDocument() {
+                if (schedule.length === 0) {
+                    showNotification('No hay cronograma para mostrar. Genera uno primero.', false);
+                    return;
+                }
+                
+                // Actualizar fecha del documento
+                documentDate.textContent = `Generado el: ${new Date().toLocaleDateString()}`;
+                
+                // Limpiar contenido anterior
+                documentBody.innerHTML = '';
+                
+                // Agregar tareas al documento
+                schedule.forEach(task => {
+                    const taskDate = new Date(task.date);
+                    const taskElement = document.createElement('div');
+                    taskElement.classList.add('document-task');
+                    taskElement.classList.add(`document-task-${task.priority.split('-')[1]}`);
+                    
+                    taskElement.innerHTML = `
+                        <h3>${task.title}</h3>
+                        <p><strong>Fecha:</strong> ${taskDate.toLocaleDateString()}</p>
+                        <p><strong>Descripción:</strong> ${task.description}</p>
+                        <p><strong>Prioridad:</strong> ${task.priorityLabel}</p>
+                    `;
+                    
+                    documentBody.appendChild(taskElement);
+                });
+                
+                // Mostrar modal
+                documentModal.style.display = 'flex';
+            }
+            
+            // Cerrar modal
+            closeModal.addEventListener('click', () => {
+                documentModal.style.display = 'none';
             });
+            
+            closeDocument.addEventListener('click', () => {
+                documentModal.style.display = 'none';
+            });
+            
+            // Imprimir documento
+            printDocument.addEventListener('click', () => {
+                window.print();
+            });
+            
+            // Cerrar modal al hacer clic fuera del contenido
+            documentModal.addEventListener('click', (e) => {
+                if (e.target === documentModal) {
+                    documentModal.style.display = 'none';
+                }
+            });
+            
+            // Exportar a PDF
+            exportScheduleBtn.addEventListener('click', exportToPDF);
+            
+            function exportToPDF() {
+                if (schedule.length === 0) {
+                    showNotification('No hay cronograma para exportar. Genera uno primero.', false);
+                    return;
+                }
+                
+                // Crear un nuevo documento PDF
+                const doc = new jsPDF();
+                
+                // Agregar título
+                doc.setFontSize(20);
+                doc.setTextColor(67, 97, 238);
+                doc.text('Cronograma de Actividades', 105, 20, { align: 'center' });
+                
+                // Agregar fecha
+                doc.setFontSize(12);
+                doc.setTextColor(100, 100, 100);
+                doc.text(`Generado el: ${new Date().toLocaleDateString()}`, 105, 30, { align: 'center' });
+                
+                // Agregar contenido
+                let y = 50;
+                doc.setFontSize(12);
+                doc.setTextColor(0, 0, 0);
+                
+                schedule.forEach((task, index) => {
+                    const taskDate = new Date(task.date);
+                    
+                    // Comprobar si necesitamos una nueva página
+                    if (y > 250) {
+                        doc.addPage();
+                        y = 20;
+                    }
+                    
+                    // Agregar número de tarea
+                    doc.setFontSize(14);
+                    doc.setTextColor(67, 97, 238);
+                    doc.text(`${index + 1}. ${task.title}`, 20, y);
+                    
+                    // Agregar detalles de la tarea
+                    doc.setFontSize(10);
+                    doc.setTextColor(100, 100, 100);
+                    doc.text(`Fecha: ${taskDate.toLocaleDateString()}`, 20, y + 7);
+                    doc.text(`Prioridad: ${task.priorityLabel}`, 20, y + 14);
+                    
+                    // Agregar descripción (puede ser multilínea)
+                    const descriptionLines = doc.splitTextToSize(`Descripción: ${task.description}`, 170);
+                    doc.text(descriptionLines, 20, y + 21);
+                    
+                    // Calcular la nueva posición Y
+                    y += 21 + (descriptionLines.length * 7) + 10;
+                    
+                    // Agregar línea separadora
+                    doc.setDrawColor(200, 200, 200);
+                    doc.line(20, y - 5, 190, y - 5);
+                });
+                
+                // Guardar el PDF
+                doc.save('cronograma.pdf');
+                showNotification('PDF exportado correctamente');
+            }
             
             // Añadir algunos mensajes iniciales al chat
             setTimeout(() => {
