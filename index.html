@@ -3,13 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Organizador Inteligente con OCR</title>
+    <title>Organizador Inteligente con OCR y IA</title>
+    
+    <!-- Meta tags para PWA -->
+    <meta name="theme-color" content="#4361ee">
+    <meta name="description" content="Aplicación para organizar documentos con reconocimiento OCR e IA integrado">
+    <meta name="keywords" content="OCR, IA, organizador, documentos, inteligente, análisis">
+    <meta name="author" content="Organizador Inteligente">
+    
+    <!-- Preconexión para mejorar rendimiento -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    
+    <!-- Favicon y iconos PWA -->
+    <link rel="icon" href="icons/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    
+    <!-- Manifest para PWA -->
+    <link rel="manifest" href="manifest.json">
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Nuestros archivos CSS -->
-    <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/components/header.css">
     <link rel="stylesheet" href="css/components/card.css">
@@ -17,38 +33,84 @@
     <link rel="stylesheet" href="css/components/upload.css">
     <link rel="stylesheet" href="css/components/schedule.css">
     <link rel="stylesheet" href="css/components/modal.css">
+    <link rel="stylesheet" href="css/ai.css">
 </head>
 <body>
     <div class="container">
+        <!-- Panel de configuración de IA -->
+        <div class="ai-config-panel">
+            <div class="ai-config-header">
+                <h4><i class="fas fa-robot"></i> Configuración de IA</h4>
+                <button class="ai-config-toggle"><i class="fas fa-cog"></i></button>
+            </div>
+            <div class="ai-config-content" style="display: none;">
+                <div class="ai-config-item">
+                    <label for="ai-api-key">API Key (Hugging Face):</label>
+                    <input type="password" id="ai-api-key" placeholder="hf_...">
+                    <button id="save-ai-key">Guardar</button>
+                    <p class="help-text">Obtén tu API key en <a href="https://huggingface.co" target="_blank">huggingface.co</a></p>
+                </div>
+                <div class="ai-config-item">
+                    <label>
+                        <input type="checkbox" id="ai-auto-analysis" checked>
+                        Análisis automático con IA
+                    </label>
+                </div>
+                <div class="ai-config-item">
+                    <label>
+                        <input type="checkbox" id="ai-advanced-ocr" checked>
+                        OCR Avanzado
+                    </label>
+                </div>
+                <div class="ai-config-item">
+                    <button id="ai-analyze-all" class="btn btn-outline">
+                        <i class="fas fa-brain"></i> Analizar todo con IA
+                    </button>
+                    <button id="ai-view-insights" class="btn btn-outline">
+                        <i class="fas fa-chart-bar"></i> Ver insights
+                    </button>
+                </div>
+            </div>
+        </div>
+        
         <header>
             <div class="logo">
-                <i class="fas fa-file-alt"></i>
-                <h1>Organizador Inteligente con OCR</h1>
+                <i class="fas fa-robot"></i>
+                <div>
+                    <h1>Organizador Inteligente</h1>
+                    <p class="tagline">OCR + IA integrada</p>
+                </div>
             </div>
-            <div class="user">
-                <i class="fas fa-user-circle fa-2x"></i>
+            <div class="header-controls">
+                <div class="search-container">
+                    <input type="text" id="global-search" placeholder="Buscar en documentos...">
+                    <button id="search-btn"><i class="fas fa-search"></i></button>
+                </div>
+                <div class="user">
+                    <i class="fas fa-user-circle fa-2x"></i>
+                </div>
             </div>
         </header>
         
         <div class="card">
             <div class="card-header">
-                <span>Asistente Virtual</span>
+                <span>Asistente Virtual con IA</span>
                 <i class="fas fa-robot"></i>
             </div>
             <div class="card-body">
                 <div class="chat-container">
                     <div class="chat-messages" id="chat-messages">
                         <div class="message bot-message">
-                            ¡Hola! Soy tu asistente organizador. Ahora puedo leer texto de imágenes usando OCR.
-                            <div class="message-time">10:45 AM</div>
+                            ¡Hola! Soy tu asistente organizador con IA. Puedo leer texto de imágenes usando OCR y analizar el contenido con inteligencia artificial.
+                            <div class="message-time" id="current-time"></div>
                         </div>
                         <div class="message user-message">
-                            ¿Puedes leer texto de imágenes?
-                            <div class="message-time">10:46 AM</div>
+                            ¿Qué puedes analizar con IA?
+                            <div class="message-time">Hace un momento</div>
                         </div>
                         <div class="message bot-message">
-                            ¡Sí! Sube una imagen con texto y podré extraerlo automáticamente para incluirlo en tu cronograma.
-                            <div class="message-time">10:46 AM</div>
+                            Puedo categorizar automáticamente tus documentos, extraer entidades importantes, generar resúmenes, analizar sentimientos y detectar palabras clave.
+                            <div class="message-time">Hace un momento</div>
                         </div>
                     </div>
                     
@@ -64,7 +126,7 @@
         
         <div class="card">
             <div class="card-header">
-                <span>Gestión de Documentos</span>
+                <span>Gestión de Documentos con IA</span>
                 <i class="fas fa-folder"></i>
             </div>
             <div class="card-body">
@@ -73,17 +135,41 @@
                         <i class="fas fa-cloud-upload-alt"></i>
                     </div>
                     <p>Arrastra tus documentos aquí o haz clic para seleccionar</p>
-                    <p class="file-meta">Formatos soportados: PDF, DOCX, XLSX, PPTX, imágenes (OCR)</p>
-                    <input type="file" id="file-input" style="display: none;" multiple accept=".pdf,.docx,.xlsx,.pptx,.txt,.jpg,.jpeg,.png">
+                    <p class="file-meta">Formatos soportados: PDF, DOCX, XLSX, PPTX, imágenes (OCR + IA)</p>
+                    <input type="file" id="file-input" style="display: none;" multiple accept=".pdf,.docx,.xlsx,.pptx,.txt,.jpg,.jpeg,.png,.webp">
                 </div>
                 
                 <div class="progress-bar" id="ocr-progress">
                     <div class="progress" id="ocr-progress-bar"></div>
+                    <div class="progress-text" id="ocr-progress-text">0%</div>
+                </div>
+                
+                <div class="ai-analysis-result" id="ai-analysis-result">
+                    <h4><i class="fas fa-brain"></i> Análisis de IA</h4>
+                    <div class="ai-result-content" id="ai-result-content">
+                        <div class="ai-categories">
+                            <h5>Categorías detectadas:</h5>
+                            <div class="ai-tags" id="ai-categories-tags"></div>
+                        </div>
+                        <div class="ai-summary">
+                            <h5>Resumen:</h5>
+                            <p id="ai-summary-text"></p>
+                        </div>
+                        <div class="ai-keywords">
+                            <h5>Palabras clave:</h5>
+                            <div class="ai-tags" id="ai-keywords-tags"></div>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="ocr-result" id="ocr-result">
-                    <h4>Texto detectado:</h4>
-                    <div id="ocr-text"></div>
+                    <div class="ocr-result-header">
+                        <h4>Texto detectado:</h4>
+                        <button class="btn-edit-ocr" id="edit-ocr-btn">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                    </div>
+                    <div id="ocr-text" contenteditable="false"></div>
                 </div>
                 
                 <div class="file-list" id="file-list">
@@ -92,8 +178,12 @@
                             <i class="fas fa-file-pdf"></i>
                         </div>
                         <div class="file-info">
-                            <div class="file-name">Apuntes Matemáticas.pdf</div>
+                            <div class="file-name">Apuntes Matemáticas.pdf <span class="ai-indicator">IA</span></div>
                             <div class="file-meta">2.4 MB - Subido: 12/05/2023</div>
+                            <div class="file-categories">
+                                <span class="category-tag">estudio</span>
+                                <span class="category-tag">matemáticas</span>
+                            </div>
                         </div>
                         <div class="file-actions">
                             <i class="fas fa-ellipsis-v"></i>
@@ -104,8 +194,12 @@
                             <i class="fas fa-file-word"></i>
                         </div>
                         <div class="file-info">
-                            <div class="file-name">Ensayo Literatura.docx</div>
+                            <div class="file-name">Ensayo Literatura.docx <span class="ai-indicator">IA</span></div>
                             <div class="file-meta">1.1 MB - Subido: 11/05/2023</div>
+                            <div class="file-categories">
+                                <span class="category-tag">estudio</span>
+                                <span class="category-tag">literatura</span>
+                            </div>
                         </div>
                         <div class="file-actions">
                             <i class="fas fa-ellipsis-v"></i>
@@ -124,13 +218,16 @@
                     <button class="btn btn-primary" id="generate-schedule">
                         <i class="fas fa-calendar-alt"></i> <span>Generar Cronograma</span>
                     </button>
+                    <button class="btn btn-outline" id="ai-suggestions">
+                        <i class="fas fa-lightbulb"></i> <span>Sugerencias IA</span>
+                    </button>
                 </div>
             </div>
         </div>
         
         <div class="card" style="grid-column: 1 / -1;">
             <div class="card-header">
-                <span>Cronograma Generado</span>
+                <span>Cronograma Generado con IA</span>
                 <i class="fas fa-calendar-check"></i>
             </div>
             <div class="card-body">
@@ -147,6 +244,9 @@
                     <button class="btn btn-outline" id="export-schedule">
                         <i class="fas fa-download"></i> <span>Exportar a PDF</span>
                     </button>
+                    <button class="btn btn-primary" id="ai-optimize">
+                        <i class="fas fa-magic"></i> <span>Optimizar con IA</span>
+                    </button>
                 </div>
                 
                 <div class="schedule-view" id="schedule-view">
@@ -155,11 +255,49 @@
                         <p>No hay cronograma generado. Haz clic en "Generar Cronograma" para crear uno.</p>
                     </div>
                 </div>
+
+                <div class="ai-insights" id="ai-insights" style="display: none;">
+                    <h4><i class="fas fa-chart-line"></i> Insights de IA</h4>
+                    <div class="insights-content">
+                        <div class="insight-card">
+                            <div class="insight-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="insight-data">
+                                <h5>Tiempo estimado</h5>
+                                <p>12 horas de estudio</p>
+                            </div>
+                        </div>
+                        <div class="insight-card">
+                            <div class="insight-icon">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="insight-data">
+                                <h5>Prioridades</h5>
+                                <p>3 tareas urgentes</p>
+                            </div>
+                        </div>
+                        <div class="insight-card">
+                            <div class="insight-icon">
+                                <i class="fas fa-balance-scale"></i>
+                            </div>
+                            <div class="insight-data">
+                                <h5>Distribución</h5>
+                                <p>40% estudio, 30% trabajo, 30% personal</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         
         <div class="footer">
-            <p>Organizador Inteligente con OCR &copy; 2023 - <a href="https://github.com/Luben2003/organice" target="_blank">Ver en GitHub</a></p>
+            <p>Organizador Inteligente con OCR & IA &copy; 2023 - <a href="https://github.com/Luben2003/organice" target="_blank">Ver en GitHub</a></p>
+            <div class="footer-links">
+                <a href="#" id="toggle-theme"><i class="fas fa-moon"></i> Tema oscuro</a>
+                <a href="#" id="toggle-accessibility"><i class="fas fa-universal-access"></i> Accesibilidad</a>
+                <a href="#" id="show-help"><i class="fas fa-question-circle"></i> Ayuda</a>
+            </div>
         </div>
     </div>
 
@@ -185,6 +323,57 @@
         </div>
     </div>
 
+    <!-- Modal de configuración de IA -->
+    <div class="modal" id="ai-settings-modal">
+        <div class="modal-content">
+            <span class="close-modal" id="close-ai-modal">&times;</span>
+            <div class="document-header">
+                <h2 class="document-title">Configuración de Inteligencia Artificial</h2>
+                <p>Personaliza el comportamiento de la IA según tus necesidades</p>
+            </div>
+            <div class="document-body">
+                <div class="ai-settings-form">
+                    <div class="form-group">
+                        <label for="ai-model">Modelo de IA:</label>
+                        <select id="ai-model">
+                            <option value="balanced">Equilibrado (recomendado)</option>
+                            <option value="accurate">Máxima precisión (más lento)</option>
+                            <option value="fast">Máxima velocidad (menos preciso)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="ai-real-time" checked>
+                            Análisis en tiempo real
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="ai-personalization" checked>
+                            Personalización basada en uso
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label for="ai-language">Idioma preferido:</label>
+                        <select id="ai-language">
+                            <option value="es">Español</option>
+                            <option value="en">Inglés</option>
+                            <option value="auto">Detectar automáticamente</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="document-actions">
+                <button class="btn btn-primary" id="save-ai-settings">
+                    <i class="fas fa-save"></i> Guardar configuración
+                </button>
+                <button class="btn btn-outline" id="close-ai-settings">
+                    <i class="fas fa-times"></i> Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div class="notification" id="notification">
         <i class="fas fa-check-circle"></i> <span id="notification-text"></span>
     </div>
@@ -193,14 +382,59 @@
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
-    <!-- Nuestros archivos JS -->
-    <script src="js/stateManager.js"></script>
-    <script src="js/pluginSystem.js"></script>
+    <!-- Nuestros archivos JS principales -->
     <script src="js/utils.js"></script>
     <script src="js/storage.js"></script>
+    <script src="js/stateManager.js"></script>
+    <script src="js/pluginSystem.js"></script>
     <script src="js/chat.js"></script>
     <script src="js/ocr.js"></script>
     <script src="js/schedule.js"></script>
+    <script src="js/aiProcessor.js"></script>
+    <script src="js/aiIntegration.js"></script>
     <script src="js/main.js"></script>
+
+    <!-- Inicialización -->
+    <script>
+        // Establecer la hora actual en el primer mensaje
+        document.addEventListener('DOMContentLoaded', function() {
+            const now = new Date();
+            document.getElementById('current-time').textContent = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            // Inicializar tooltips
+            const tooltipElements = document.querySelectorAll('[data-tooltip]');
+            tooltipElements.forEach(el => {
+                el.addEventListener('mouseenter', showTooltip);
+                el.addEventListener('mouseleave', hideTooltip);
+            });
+            
+            // Inicializar la aplicación
+            initializeApp();
+        });
+        
+        function initializeApp() {
+            console.log('Inicializando Organizador Inteligente con IA...');
+            // La inicialización completa se maneja en main.js
+        }
+        
+        function showTooltip(e) {
+            const tooltipText = this.getAttribute('data-tooltip');
+            const tooltip = document.createElement('div');
+            tooltip.className = 'tooltip';
+            tooltip.textContent = tooltipText;
+            document.body.appendChild(tooltip);
+            
+            const rect = this.getBoundingClientRect();
+            tooltip.style.top = (rect.top - tooltip.offsetHeight - 5) + 'px';
+            tooltip.style.left = (rect.left + (rect.width - tooltip.offsetWidth) / 2) + 'px';
+        }
+        
+        function hideTooltip() {
+            const tooltip = document.querySelector('.tooltip');
+            if (tooltip) {
+                tooltip.remove();
+            }
+        }
+    </script>
 </body>
 </html>
