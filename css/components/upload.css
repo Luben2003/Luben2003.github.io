@@ -1,0 +1,136 @@
+/* ================== ESTILOS SUBIDA ================== */
+.upload-area {
+    border: 2px dashed var(--primary);
+    padding: 30px;
+    text-align: center;
+    border-radius: 10px;
+    margin: 15px 0;
+    cursor: pointer;
+    transition: all 0.3s;
+    background-color: rgba(67, 97, 238, 0.05);
+}
+
+.upload-area:hover {
+    background-color: rgba(67, 97, 238, 0.1);
+    border-color: var(--secondary);
+}
+
+.upload-icon {
+    font-size: 3rem;
+    color: var(--primary);
+    margin-bottom: 15px;
+}
+
+.file-list {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: var(--light-bg);
+    border-radius: 8px;
+    gap: 10px;
+}
+
+.file-icon {
+    font-size: 1.5rem;
+    color: var(--primary);
+}
+
+.file-info {
+    flex: 1;
+}
+
+.file-name {
+    font-weight: 600;
+}
+
+.file-meta {
+    font-size: 0.8rem;
+    color: var(--gray);
+}
+
+.storage-info {
+    font-size: 0.8rem;
+    padding: 10px;
+    background-color: var(--light-bg);
+    border-radius: 8px;
+    margin-top: 15px;
+    text-align: center;
+}
+
+.progress-bar {
+    height: 5px;
+    background-color: #e9ecef;
+    border-radius: 3px;
+    margin-top: 10px;
+    overflow: hidden;
+    display: none;
+}
+
+.progress {
+    height: 100%;
+    background-color: var(--primary);
+    width: 0%;
+    transition: width 0.3s;
+}
+
+.ocr-result {
+    margin-top: 15px;
+    padding: 15px;
+    background-color: var(--light-bg);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    display: none;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.ocr-toggle {
+    color: var(--primary);
+    cursor: pointer;
+    font-size: 0.8rem;
+    margin-top: 5px;
+    display: inline-block;
+}
+
+/* ================== ESTILOS CATEGORÍAS ================== */
+.category-section {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: var(--light-bg);
+    border-radius: 10px;
+}
+
+.category-section h4 {
+    margin-bottom: 10px;
+    color: var(--primary);
+}
+
+.category-list {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.category-tag {
+    padding: 5px 12px;
+    background: white;
+    border: 1px solid var(--primary);
+    border-radius: 20px;
+    color: var(--primary);
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 0.8rem;
+}
+
+.category-tag:hover,
+.category-tag.active {
+    background: var(--primary);
+    color: white;
+}

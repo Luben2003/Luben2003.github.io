@@ -1,0 +1,181 @@
+/* ================== ESTILOS CRONOGRAMA ================== */
+.schedule-view {
+    margin-top: 20px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.task {
+    padding: 15px;
+    border-left: 4px solid var(--primary);
+    background-color: white;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s;
+}
+
+.task:hover {
+    transform: translateX(5px);
+}
+
+.task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.task-title {
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.task-date {
+    font-size: 0.9rem;
+    color: var(--primary);
+    font-weight: 500;
+}
+
+.task-desc {
+    font-size: 0.9rem;
+    color: var(--gray);
+    margin-bottom: 10px;
+}
+
+.task-priority {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.priority-high {
+    background-color: rgba(249, 65, 68, 0.2);
+    color: var(--danger);
+}
+
+.priority-medium {
+    background-color: rgba(249, 199, 79, 0.2);
+    color: #d4a200;
+}
+
+.priority-low {
+    background-color: rgba(76, 201, 240, 0.2);
+    color: var(--success);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 30px;
+    color: var(--gray);
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    color: #ced4da;
+}
+
+.controls {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    gap: 10px;
+}
+
+.btn {
+    padding: 12px 15px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 14px;
+    white-space: nowrap;
+    min-width: 120px;
+    text-align: center;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+}
+
+.btn-primary:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+}
+
+.btn-outline:hover {
+    background-color: var(--primary);
+    color: white;
+}
+
+.tag {
+    display: inline-block;
+    background-color: var(--secondary);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    margin-top: 5px;
+}
+
+.schedule-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.schedule-controls .btn {
+    flex: 1;
+    min-width: 140px;
+}
+
+/* ================== ESTILOS PLANTILLAS ================== */
+.templates-container {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: var(--light-bg);
+    border-radius: 10px;
+}
+
+.templates-container h4 {
+    margin-bottom: 10px;
+    color: var(--primary);
+}
+
+.template-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn-template {
+    padding: 8px 15px;
+    background: white;
+    border: 1px solid var(--primary);
+    border-radius: 20px;
+    color: var(--primary);
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 0.9rem;
+}
+
+.btn-template:hover {
+    background: var(--primary);
+    color: white;
+}

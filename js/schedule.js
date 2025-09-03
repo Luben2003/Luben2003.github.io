@@ -1,4 +1,28 @@
 // ================== FUNCIONALIDAD CRONOGRAMA ==================
+
+// Plantillas de cronograma
+const scheduleTemplates = {
+    estudiantil: [
+        { title: "Revisar apuntes de clase", daysOffset: 0, priority: "priority-high" },
+        { title: "Realizar ejercicios prácticos", daysOffset: 1, priority: "priority-medium" },
+        { title: "Preparar resumen", daysOffset: 3, priority: "priority-low" },
+        { title: "Repasar antes del examen", daysOffset: 6, priority: "priority-high" }
+    ],
+    laboral: [
+        { title: "Revisar correos importantes", daysOffset: 0, priority: "priority-high" },
+        { title: "Elaborar informe de avance", daysOffset: 2, priority: "priority-medium" },
+        { title: "Preparar reunión de equipo", daysOffset: 4, priority: "priority-high" },
+        { title: "Planificar semana siguiente", daysOffset: 5, priority: "priority-medium" }
+    ],
+    proyecto: [
+        { title: "Definir objetivos del proyecto", daysOffset: 0, priority: "priority-high" },
+        { title: "Investigar y recopilar información", daysOffset: 1, priority: "priority-medium" },
+        { title: "Crear plan de trabajo", daysOffset: 2, priority: "priority-high" },
+        { title: "Ejecutar primera fase", daysOffset: 3, priority: "priority-medium" },
+        { title: "Revisar y ajustar", daysOffset: 7, priority: "priority-high" }
+    ]
+};
+
 function generateSchedule() {
     if (documents.length === 0) {
         addMessage('Primero necesitas subir algunos documentos para generar un cronograma.', false);
@@ -69,6 +93,8 @@ function generateSchedule() {
 
 function updateScheduleView(filteredSchedule = null) {
     const scheduleView = document.getElementById('schedule-view');
+    if (!scheduleView) return;
+    
     scheduleView.innerHTML = '';
     
     const scheduleToShow = filteredSchedule || schedule;
@@ -109,10 +135,16 @@ function viewDocument() {
     }
     
     // Actualizar fecha del documento
-    documentDate.textContent = `Generado el: ${new Date().toLocaleDateString()}`;
+    const documentDate = document.getElementById('document-date');
+    if (documentDate) {
+        documentDate.textContent = `Generado el: ${new Date().toLocaleDateString()}`;
+    }
     
     // Limpiar contenido anterior
-    documentBody.innerHTML = '';
+    const documentBody = document.getElementById('document-body');
+    if (documentBody) {
+        documentBody.innerHTML = '';
+    }
     
     // Agregar tareas al documento
     schedule.forEach(task => {
@@ -128,11 +160,16 @@ function viewDocument() {
             <p><strong>Prioridad:</strong> ${task.priorityLabel}</p>
         `;
         
-        documentBody.appendChild(taskElement);
+        if (documentBody) {
+            documentBody.appendChild(taskElement);
+        }
     });
     
     // Mostrar modal
-    documentModal.style.display = 'flex';
+    const documentModal = document.getElementById('document-modal');
+    if (documentModal) {
+        documentModal.style.display = 'flex';
+    }
 }
 
 function exportToPDF() {
@@ -197,28 +234,6 @@ function exportToPDF() {
 }
 
 // ================== PLANTILLAS PREDEFINIDAS ==================
-const scheduleTemplates = {
-    estudiantil: [
-        { title: "Revisar apuntes de clase", daysOffset: 0, priority: "priority-high" },
-        { title: "Realizar ejercicios prácticos", daysOffset: 1, priority: "priority-medium" },
-        { title: "Preparar resumen", daysOffset: 3, priority: "priority-low" },
-        { title: "Repasar antes del examen", daysOffset: 6, priority: "priority-high" }
-    ],
-    laboral: [
-        { title: "Revisar correos importantes", daysOffset: 0, priority: "priority-high" },
-        { title: "Elaborar informe de avance", daysOffset: 2, priority: "priority-medium" },
-        { title: "Preparar reunión de equipo", daysOffset: 4, priority: "priority-high" },
-        { title: "Planificar semana siguiente", daysOffset: 5, priority: "priority-medium" }
-    ],
-    proyecto: [
-        { title: "Definir objetivos del proyecto", daysOffset: 0, priority: "priority-high" },
-        { title: "Investigar y recopilar información", daysOffset: 1, priority: "priority-medium" },
-        { title: "Crear plan de trabajo", daysOffset: 2, priority: "priority-high" },
-        { title: "Ejecutar primera fase", daysOffset: 3, priority: "priority-medium" },
-        { title: "Revisar y ajustar", daysOffset: 7, priority: "priority-high" }
-    ]
-};
-
 function initTemplates() {
     const templatesContainer = document.createElement('div');
     templatesContainer.classList.add('templates-container');
